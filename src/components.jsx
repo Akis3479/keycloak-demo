@@ -23,7 +23,7 @@ export const ProtectedPage = () => {
         <span>🔒</span> Protected Page
       </h1>
       <p className="text-blue-800 text-lg mb-6">
-        Secret content! You can only see this because you successfully authenticated with Keycloak.
+        You can only see this because you successfully authenticated with Keycloak.
       </p>
       
       <div className="bg-white p-4 rounded-lg border border-blue-100 shadow-inner">
