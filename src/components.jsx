@@ -65,7 +65,6 @@ export const TimeoutLoader = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // What to show after 10 seconds
   if (hasTimedOut) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -87,7 +86,6 @@ export const TimeoutLoader = () => {
     );
   }
 
-  // What to show during the first 10 seconds
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-xl font-medium text-gray-500 animate-pulse">
@@ -95,4 +93,53 @@ export const TimeoutLoader = () => {
       </div>
     </div>
   );
+};
+
+// 4. The Admin Page
+export const AdminPage = () => {
+  const { keycloak } = useKeycloak();
+
+  return (
+    <div className="max-w-4xl mx-auto mt-10 p-8 bg-purple-50 rounded-xl shadow-md border border-purple-200">
+      <h1 className="text-3xl font-bold text-purple-900 mb-4 flex items-center gap-2">
+        <span>👨‍💻</span> Admin Dashboard
+      </h1>
+      <p className="text-purple-800 text-lg mb-6">
+        You can only see this because you have the admin role.
+      </p>
+      
+      <div className="bg-white p-4 rounded-lg border border-purple-100 shadow-inner">
+        <p className="text-gray-700">
+          <span className="font-semibold">Logged in as admin: </span> 
+          <span className="text-purple-600 font-mono">{keycloak.tokenParsed?.preferred_username}</span>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// 5. Helper: Admin Route Wrapper
+export const AdminRoute = ({ children }) => {
+  const { keycloak, initialized } = useKeycloak();
+
+  if (!initialized) {
+    return <TimeoutLoader />; 
+  }
+
+  if (!keycloak.authenticated) {
+    keycloak.login();
+    return null;
+  }
+
+  // Check if the user has the 'admin' realm role
+  if (!keycloak.hasRealmRole('admin')) {
+    return (
+      <div className="max-w-4xl mx-auto mt-10 p-8 bg-red-50 rounded-xl shadow-md border border-red-200 text-center">
+        <h1 className="text-3xl font-bold text-red-900 mb-4">Access Denied</h1>
+        <p className="text-red-800 text-lg">You do not have the necessary permissions to view this page.</p>
+      </div>
+    );
+  }
+
+  return children;
 };

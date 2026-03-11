@@ -1,7 +1,7 @@
 import { ReactKeycloakProvider, useKeycloak } from '@react-keycloak/web';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import keycloak from './keycloak';
-import { PublicPage, ProtectedPage, PrivateRoute } from './components';
+import { PublicPage, ProtectedPage, PrivateRoute, AdminPage, AdminRoute } from './components';
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
                   Home (Public)
                 </Link>
                 <ProtectedNavLink />
+                <AdminNavLink />
               </div>
 
               <AuthButtons />
@@ -37,6 +38,14 @@ function App() {
                 <PrivateRoute>
                   <ProtectedPage />
                 </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
               } 
             />
           </Routes>
@@ -92,6 +101,23 @@ const ProtectedNavLink = () => {
       className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
     >
       Protected Page
+    </Link>
+  );
+};
+
+const AdminNavLink = () => {
+  const { keycloak } = useKeycloak();
+
+  if (!keycloak?.authenticated || !keycloak.hasRealmRole('admin')) {
+    return null;
+  }
+
+  return (
+    <Link 
+      to="/admin" 
+      className="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+    >
+      Admin Dashboard
     </Link>
   );
 };
